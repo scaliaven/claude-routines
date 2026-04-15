@@ -1,4 +1,4 @@
-# claude-routine-Prompts
+# claude-routine-prompts
 
 A collection of scheduled Claude agent routines — each one is a self-contained prompt with a config file that can be run on a cron schedule or triggered manually.
 
