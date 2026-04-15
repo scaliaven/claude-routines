@@ -1,0 +1,69 @@
+# claude-routines
+
+A collection of scheduled Claude agent routines — each one is a self-contained prompt with a config file that can be run on a cron schedule or triggered manually.
+
+## Repository structure
+
+```
+claude-routines/
+├── README.md               # This file
+└── paper_of_the_day/
+    ├── prompt.md           # The agent prompt
+    └── config.yaml         # User-configurable settings
+```
+
+Each routine lives in its own subdirectory containing two files:
+
+| File | Purpose |
+|---|---|
+| `prompt.md` | Instructions for the Claude agent. Describes what to do, how to read the config, and how to format output. |
+| `config.yaml` | User-editable settings that control the routine's behavior without touching the prompt. |
+
+---
+
+## Routines
+
+### `paper_of_the_day`
+
+Searches arXiv for papers published in the last 24 hours, filters by configured categories and keywords, and surfaces the single most notable paper with a structured summary.
+
+**Config options** (`paper_of_the_day/config.yaml`):
+
+| Key | Type | Description |
+|---|---|---|
+| `arxiv_categories` | list of strings | arXiv category codes to search (e.g. `cs.AI`, `cs.LG`) |
+| `keywords_prioritize` | list of strings | Prefer papers containing these terms |
+| `keywords_deprioritize` | list of strings | Down-rank papers containing these terms |
+| `output_format` | list of strings | Fields to include in the output, in order |
+
+**How to run:**
+```bash
+claude --print < paper_of_the_day/prompt.md
+```
+
+Or schedule it via Claude Code:
+```
+/schedule daily at 8am paper_of_the_day
+```
+
+---
+
+## How to add a new routine
+
+1. Create a new subdirectory with a short, descriptive name (e.g. `weekly_digest`).
+
+2. Add a `prompt.md` that:
+   - Describes the task clearly
+   - Instructs the agent to read its `config.yaml` for any user-configurable settings
+   - Specifies the expected output format
+
+3. Add a `config.yaml` with sensible defaults for all configurable parameters.
+
+4. Document the routine in this README under the **Routines** section.
+
+### Prompt writing tips
+
+- Start with a one-line role statement ("You are a ...").
+- Number the steps the agent should follow.
+- Define every config key the prompt references in a table in `config.yaml`.
+- Keep prompt logic and user preferences separate — the prompt is the *how*, the config is the *what*.

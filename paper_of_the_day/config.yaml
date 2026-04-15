@@ -1,0 +1,17 @@
+arxiv_categories:
+  - cs.AI
+  - cs.LG
+  - cs.CL
+
+keywords_prioritize: []
+
+keywords_deprioritize: []
+
+output_format:
+  - title
+  - authors
+  - arxiv_link
+  - why_it_matters
+  - tl_dr
+  - key_contribution
+  - open_questions
