@@ -6,12 +6,15 @@ Surface the single most notable AI/ML paper from the last 24 hours.
 
 1. **Read** `config.yaml`: `arxiv_categories`, `interests`, `keywords_prioritize`, `keywords_deprioritize`, `max_candidates`, `prioritize_with_code`, `output_format`.
 
-2. **Fetch papers** — stop once you have `max_candidates`. Try in order:
-   - **A (preferred):** `https://rss.arxiv.org/rss/<CATEGORY>` — one request per category. Contains today's announced papers.
-   - **B (fallback):** Semantic Scholar: `https://api.semanticscholar.org/graph/v1/paper/search?query=<TERMS>&fields=title,authors,abstract,externalIds&limit=20&publicationDateOrYear=<TODAY-2d>:<TODAY>`
-   - **C (last resort):** WebSearch `arxiv <CATEGORY> <YYYY-MM-DD> <keyword>`, then fetch `https://arxiv.org/abs/<ID>` for each hit.
-
-   Collect per paper: title, authors, arXiv ID, abstract, date, GitHub URL if any.
+2. **Fetch papers in one request.** Call Semantic Scholar with all `keywords_prioritize` joined by spaces, date-bounded to the last 3 days — this returns titles + abstracts in a single JSON response, no follow-up fetches needed:
+   ```
+   GET https://api.semanticscholar.org/graph/v1/paper/search
+     ?query=<keywords_prioritize joined with spaces>
+     &fields=title,authors,abstract,externalIds,openAccessPdf
+     &limit=<max_candidates>
+     &publicationDateOrYear=<TODAY-3d>:<TODAY>
+   ```
+   If that call fails: fetch ONE arXiv RSS feed for the first category only — `https://rss.arxiv.org/rss/<first_category>`. Do not use WebSearch.
 
 3. **Rank**: boost `keywords_prioritize` matches and `interests` alignment; penalize `keywords_deprioritize`; boost code links if `prioritize_with_code`; then rank by novelty, result clarity, and impact.
 
