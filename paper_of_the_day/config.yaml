@@ -1,6 +1,6 @@
-# Maximum API spend per run. Pass this value to --max-budget-usd when invoking:
-#   claude --print --max-budget-usd 0.10 --effort low < paper_of_the_day/prompt.md
-max_budget_usd: 0.10
+# Estimated token usage per run: ~7,000–9,000 tokens (~16–20% of a Claude Pro 5-hour window).
+# Recommended invocation: claude --print --effort low < paper_of_the_day/prompt.md
+# Note: --max-budget-usd is only for API key (pay-per-token) plans, not Claude Pro.
 
 arxiv_categories:
   - cs.RO   # Robotics — primary home for VLA, robot learning, manipulation
