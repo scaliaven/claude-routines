@@ -6,32 +6,41 @@ Surface the single most notable AI/ML paper from the last 24 hours.
 
 1. **Read** `config.yaml`: `arxiv_categories`, `interests`, `keywords_prioritize`, `keywords_deprioritize`, `max_candidates`, `prioritize_with_code`, `output_format`.
 
-2. **Fetch papers — two requests total:**
+2. **Find candidates — exactly 2 searches, no more:**
 
-   **Request 1 — candidates:** Call Semantic Scholar with `keywords_prioritize` joined by spaces, date-bounded to the last 3 days:
+   **Search 1 — recent papers by keyword:**
    ```
-   GET https://api.semanticscholar.org/graph/v1/paper/search
-     ?query=<keywords_prioritize joined with spaces>
-     &fields=title,authors,abstract,externalIds,openAccessPdf
-     &limit=<max_candidates>
-     &publicationDateOrYear=<TODAY-3d>:<TODAY>
+   arxiv <YYYY-MM-DD> <keywords_prioritize joined with spaces, pick top 4>
    ```
-   If this call fails, fetch ONE arXiv RSS feed instead: `https://rss.arxiv.org/rss/<first_category>`.
+   Extract every arXiv ID (format `YYMM.NNNNN`) mentioned in the results.
 
-   **Request 2 — trending signal:** WebSearch `site:huggingface.co/papers trending <TODAY>`. Note which arXiv IDs appear — boost those papers in ranking. (HuggingFace's website and API are blocked by Cloudflare bot protection and cannot be fetched directly.)
+   **Search 2 — HuggingFace trending:**
+   ```
+   site:huggingface.co/papers <keywords_prioritize top 2> <YYYY-MM-DD>
+   ```
+   Note any arXiv IDs that appear — these get a community-signal ranking boost.
 
-3. **Rank**: boost `keywords_prioritize` matches and `interests` alignment; penalize `keywords_deprioritize`; boost code links if `prioritize_with_code`; then rank by novelty, result clarity, and impact.
+   Do not fetch individual paper pages. Do not call any external APIs (Semantic Scholar, arXiv RSS, HuggingFace API — all return 403 in this environment). Use only what the search results already contain: titles, snippets, and arXiv IDs.
+
+3. **Rank in-context** using what the search snippets already tell you:
+   - Boost papers matching `keywords_prioritize` or `interests`
+   - Penalize `keywords_deprioritize` matches
+   - Boost papers appearing in Search 2 (community signal)
+   - Boost papers with a GitHub URL visible in the snippet
+   - Rank remaining by apparent novelty and impact
 
 4. **Pick** the single best paper.
 
-5. **Output** the fields in `output_format` order as Markdown `##` headers:
+5. **Output** the fields in `output_format` order as `##` headers:
    - `title` — full title
-   - `authors` — full list
+   - `authors` — full list (from snippet; omit if not available)
    - `arxiv_link` — `https://arxiv.org/abs/<id>`
-   - `code_link` — repo URL or "Not released"
+   - `code_link` — GitHub URL from snippet, or "Not released"
    - `why_it_matters` — 2–3 sentences on significance
    - `tl_dr` — one plain-English sentence
    - `key_contribution` — single most important advance
    - `open_questions` — 2–3 questions the paper raises
 
-If nothing is found in the last 24 hours, report the most recent paper found (with date) and suggest broadening categories or keywords.
+If the snippets don't contain enough detail for a field, note "Details not available in search results" rather than hallucinating.
+
+If nothing relevant is found in the last 24 hours, report the closest match with its date.
