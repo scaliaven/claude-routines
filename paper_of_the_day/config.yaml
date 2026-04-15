@@ -3,14 +3,26 @@ arxiv_categories:
   - cs.LG
   - cs.CL
 
+# Free-text description of your research interests. Used to rank papers by personal relevance.
+# Example: "I work on efficient fine-tuning of LLMs and interpretability of transformer attention."
+interests: ""
+
 keywords_prioritize: []
 
 keywords_deprioritize: []
+
+# How many candidate papers to evaluate before picking the top one.
+# Higher values improve coverage but increase search time.
+max_candidates: 20
+
+# Boost papers that release code (GitHub link in abstract or comments).
+prioritize_with_code: true
 
 output_format:
   - title
   - authors
   - arxiv_link
+  - code_link
   - why_it_matters
   - tl_dr
   - key_contribution
