@@ -1,4 +1,4 @@
-# claude-routines
+# claude-routine-prompts
 
 A collection of scheduled Claude agent routines — each one is a self-contained prompt with a config file that can be run on a cron schedule or triggered manually.
 
@@ -22,6 +22,10 @@ Each routine lives in its own subdirectory containing two files:
 ---
 
 ## Routines
+
+### Instruction
+This is the instruction you write for claude code routine
+Read the file `paper_of_the_day/prompt.md` in this repository and execute the instructions exactly as written. The config file referenced in the prompt is at `paper_of_the_day/config.yaml`.
 
 ### `paper_of_the_day`
 
